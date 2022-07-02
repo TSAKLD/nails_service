@@ -13,6 +13,8 @@ type Config struct {
 	DBName     string
 
 	HTTPPort string
+
+	RedisPort string
 }
 
 func NewConfig() (*Config, error) {
@@ -28,5 +30,6 @@ func NewConfig() (*Config, error) {
 		DBPassword: os.Getenv("DB_PASS"),
 		DBName:     os.Getenv("DB_NAME"),
 		HTTPPort:   os.Getenv("HTTP_PORT"),
+		RedisPort:  os.Getenv("REDIS_PORT"),
 	}, nil
 }

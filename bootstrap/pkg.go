@@ -19,11 +19,9 @@ func DBConnect(c *Config) (*sql.DB, error) {
 	return db, db.Ping()
 }
 
-func NewRedisClient() (*redis.Client, error) {
+func NewRedisClient(c *Config) (*redis.Client, error) {
 	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
+		Addr: fmt.Sprintf("localhost:%v", c.RedisPort),
 	})
 
 	return client, client.Ping(context.Background()).Err()

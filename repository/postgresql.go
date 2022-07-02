@@ -44,14 +44,14 @@ func (r *Repository) Records() ([]entity.Record, error) {
 }
 
 func (r *Repository) Insert(record entity.Record) error {
-	r.c.Del(context.Background(), "asd321")
-
 	q := "insert into session(id, name, date, description) values ($1, $2, $3, $4)"
 
 	_, err := r.db.Exec(q, record.ID, record.Name, record.Date, record.Description)
 	if err != nil {
 		return err
 	}
+
+	r.c.Del(context.Background(), "asd321")
 
 	return nil
 }
