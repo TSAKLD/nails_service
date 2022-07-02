@@ -12,22 +12,25 @@ type Server struct {
 	router *mux.Router
 }
 
-func NewServer(s service.UseCase, p string) *Server {
-	hand := New(s)
-	r := mux.NewRouter()
-
-	r.HandleFunc("/create", hand.AddRecord).Methods(http.MethodPost)
-	r.HandleFunc("/records", hand.ShowRecords).Methods(http.MethodGet)
-
+func NewServer(p string) *Server {
 	return &Server{
 		port:   p,
-		router: r,
+		router: mux.NewRouter(),
 	}
 }
 
-func (r *Server) ListenAndServe() error {
+func (s *Server) setRoutes(us service.UseCase) {
+	hand := new(us)
+
+	s.router.HandleFunc("/create", hand.RecordAdd).Methods(http.MethodPost)
+	s.router.HandleFunc("/records", hand.Records).Methods(http.MethodGet)
+}
+
+func (s *Server) Start(us service.UseCase) error {
+	s.setRoutes(us)
+
 	fmt.Println("Server is listening...")
 
-	err := http.ListenAndServe(":"+r.port, r.router)
+	err := http.ListenAndServe(":"+s.port, s.router)
 	return err
 }

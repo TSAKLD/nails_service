@@ -8,7 +8,7 @@ type Repository interface {
 }
 
 type UseCase interface {
-	Insert(ss entity.Record) error
+	RecordAdd(ss entity.Record) error
 	Records() ([]entity.Record, error)
 }
 
@@ -20,7 +20,7 @@ func New(r Repository) UseCase {
 	return &service{repo: r}
 }
 
-func (s *service) Insert(ss entity.Record) error {
+func (s *service) RecordAdd(ss entity.Record) error {
 	err := s.repo.Insert(ss)
 	if err != nil {
 		return err

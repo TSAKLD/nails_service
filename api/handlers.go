@@ -11,7 +11,7 @@ type Handler struct {
 	s service.UseCase
 }
 
-func New(s service.UseCase) *Handler {
+func new(s service.UseCase) *Handler {
 	h := Handler{
 		s: s,
 	}
@@ -19,7 +19,7 @@ func New(s service.UseCase) *Handler {
 	return &h
 }
 
-func (hdr Handler) AddRecord(w http.ResponseWriter, r *http.Request) {
+func (hdr Handler) RecordAdd(w http.ResponseWriter, r *http.Request) {
 	var re entity.Record
 
 	err := json.NewDecoder(r.Body).Decode(&re)
@@ -28,7 +28,7 @@ func (hdr Handler) AddRecord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = hdr.s.Insert(re)
+	err = hdr.s.RecordAdd(re)
 	if err != nil {
 		json.NewEncoder(w).Encode(error.Error(err))
 		return
@@ -37,7 +37,7 @@ func (hdr Handler) AddRecord(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("Запись добавлена")
 }
 
-func (hdr Handler) ShowRecords(w http.ResponseWriter, r *http.Request) {
+func (hdr Handler) Records(w http.ResponseWriter, r *http.Request) {
 	var ss []entity.Record
 
 	ss, err := hdr.s.Records()

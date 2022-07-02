@@ -7,15 +7,10 @@ import (
 )
 
 func (r *Repository) Records() ([]entity.Record, error) {
-	var s entity.Record
-	var ss []entity.Record
-
 	ss, err := r.Get()
 	if err == nil {
 		return ss, nil
 	}
-
-	log.Println("Иду в базу")
 
 	q := "select * from session"
 
@@ -25,12 +20,19 @@ func (r *Repository) Records() ([]entity.Record, error) {
 	}
 
 	for result.Next() {
+		var s entity.Record
+
 		err = result.Scan(&s.ID, &s.Name, &s.Date, &s.Description)
 		if err != nil {
 			return []entity.Record{}, err
 		}
 
 		ss = append(ss, s)
+	}
+
+	err = result.Close()
+	if err != nil {
+		log.Println("Unable to close request")
 	}
 
 	err = r.Set(ss)

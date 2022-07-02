@@ -29,9 +29,9 @@ func main() {
 
 	serv := service.New(repo)
 
-	r := api.NewServer(serv, c.HTTPPort)
+	server := api.NewServer(c.HTTPPort)
 
-	err = r.ListenAndServe()
+	err = server.Start(serv)
 	if err != nil {
 		log.Fatal(err)
 	}
