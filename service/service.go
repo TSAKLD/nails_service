@@ -32,7 +32,7 @@ func (s *service) Insert(ss entity.Record) error {
 func (s *service) Records() ([]entity.Record, error) {
 	ss, err := s.repo.Records()
 	if err != nil {
-		return []entity.Record{}, nil
+		return []entity.Record{}, err
 	}
 
 	return ss, nil
