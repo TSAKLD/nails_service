@@ -20,7 +20,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	client, err := bootstrap.NewRedisClient()
+	client, err := bootstrap.NewRedisClient(c.RedisPort)
 	if err != nil {
 		log.Println("Unable to connect to a cache service")
 	}

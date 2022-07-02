@@ -43,15 +43,19 @@ func (r *Repository) Records() ([]entity.Record, error) {
 	return ss, nil
 }
 
-func (r *Repository) Insert(record entity.Record) error {
-	q := "insert into session(id, name, date, description) values ($1, $2, $3, $4)"
+func (r *Repository) Insert(record entity.Record) (entity.Record, error) {
+	q := "INSERT into session(name, date, description)" +
+		" VALUES ($1, $2, $3) RETURNING *"
 
-	_, err := r.db.Exec(q, record.ID, record.Name, record.Date, record.Description)
+	row := r.db.QueryRowContext(context.Background(), q, record.Name,
+		record.Date, record.Description)
+
+	err := row.Scan(&record.ID, &record.Name, &record.Date, &record.Description)
 	if err != nil {
-		return err
+		return record, err
 	}
 
 	r.c.Del(context.Background(), "asd321")
 
-	return nil
+	return record, nil
 }

@@ -20,7 +20,7 @@ func NewServer(p string) *Server {
 }
 
 func (s *Server) setRoutes(us service.UseCase) {
-	hand := new(us)
+	hand := newHandler(us)
 
 	s.router.HandleFunc("/create", hand.RecordAdd).Methods(http.MethodPost)
 	s.router.HandleFunc("/records", hand.Records).Methods(http.MethodGet)
@@ -31,6 +31,5 @@ func (s *Server) Start(us service.UseCase) error {
 
 	fmt.Println("Server is listening...")
 
-	err := http.ListenAndServe(":"+s.port, s.router)
-	return err
+	return http.ListenAndServe(":"+s.port, s.router)
 }
