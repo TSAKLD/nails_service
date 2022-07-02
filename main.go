@@ -15,12 +15,15 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	db, err := repository.DBConnect(c)
+	db, err := bootstrap.DBConnect(c)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	client := repository.NewRedisClient()
+	client, err := bootstrap.NewRedisClient()
+	if err != nil {
+		log.Println("Unable to connect to a cache service")
+	}
 
 	repo := repository.New(db, client)
 

@@ -2,32 +2,9 @@ package repository
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
-	"github.com/go-redis/redis/v9"
 	"log"
-	"nails/bootstrap"
 	"nails/entity"
 )
-
-func New(database *sql.DB, client *redis.Client) *Repository {
-	return &Repository{
-		db: database,
-		c:  client,
-	}
-}
-
-func DBConnect(c *bootstrap.Config) (*sql.DB, error) {
-	info := fmt.Sprintf("host=%v port=%v user=%v password=%v dbname=%v sslmode=disable",
-		c.DBHost, c.DBPort, c.DBUser, c.DBPassword, c.DBName)
-
-	db, err := sql.Open("postgres", info)
-	if err != nil {
-		return nil, err
-	}
-
-	return db, db.Ping()
-}
 
 func (r *Repository) Records() ([]entity.Record, error) {
 	var s entity.Record

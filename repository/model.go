@@ -1,11 +1,16 @@
 package repository
 
 import (
-	"database/sql"
-	"github.com/go-redis/redis/v9"
+	"encoding/json"
+	"nails/entity"
 )
 
-type Repository struct {
-	db *sql.DB
-	c  *redis.Client
+type Records []entity.Record
+
+func (r *Records) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, &r)
+}
+
+func (r *Records) MarshalBinary() (data []byte, err error) {
+	return json.Marshal(data)
 }
