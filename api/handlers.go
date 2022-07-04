@@ -22,13 +22,15 @@ func newHandler(s service.UseCase) *Handler {
 func (hdr Handler) RecordAdd(w http.ResponseWriter, r *http.Request) {
 	var re entity.Record
 
+	ctx := r.Context()
+
 	err := json.NewDecoder(r.Body).Decode(&re)
 	if err != nil {
 		sendError(w, err, http.StatusBadRequest)
 		return
 	}
 
-	re, err = hdr.s.RecordAdd(re)
+	re, err = hdr.s.RecordAdd(ctx, re)
 	if err != nil {
 		sendError(w, err, http.StatusInternalServerError)
 		return
@@ -37,8 +39,10 @@ func (hdr Handler) RecordAdd(w http.ResponseWriter, r *http.Request) {
 	sendResponse(w, re)
 }
 
-func (hdr Handler) Records(w http.ResponseWriter, _ *http.Request) {
-	ss, err := hdr.s.Records()
+func (hdr Handler) Records(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ss, err := hdr.s.Records(ctx)
 	if err != nil {
 		sendError(w, err, http.StatusInternalServerError)
 		return

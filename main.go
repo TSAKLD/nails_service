@@ -15,6 +15,11 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	result := c.Validate()
+	if result != nil {
+		log.Fatalln(result)
+	}
+
 	db, err := bootstrap.DBConnect(c)
 	if err != nil {
 		log.Fatalln(err)

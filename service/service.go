@@ -1,15 +1,19 @@
 package service
 
-import "nails/entity"
+import (
+	"context"
+	"nails/entity"
+	"time"
+)
 
 type Repository interface {
-	Insert(record entity.Record) (entity.Record, error)
-	Records() ([]entity.Record, error)
+	Insert(ctx context.Context, record entity.Record) (entity.Record, error)
+	Records(ctx context.Context) ([]entity.Record, error)
 }
 
 type UseCase interface {
-	RecordAdd(ss entity.Record) (entity.Record, error)
-	Records() ([]entity.Record, error)
+	RecordAdd(ctx context.Context, ss entity.Record) (entity.Record, error)
+	Records(ctx context.Context) ([]entity.Record, error)
 }
 
 type service struct {
@@ -20,8 +24,11 @@ func New(r Repository) UseCase {
 	return &service{repo: r}
 }
 
-func (s *service) RecordAdd(ss entity.Record) (entity.Record, error) {
-	ss, err := s.repo.Insert(ss)
+func (s *service) RecordAdd(ctx context.Context, ss entity.Record) (entity.Record, error) {
+	ss.CreatedAt = time.Now()
+	ss.Status = entity.StatusActive
+
+	ss, err := s.repo.Insert(ctx, ss)
 	if err != nil {
 		return entity.Record{}, err
 	}
@@ -29,8 +36,8 @@ func (s *service) RecordAdd(ss entity.Record) (entity.Record, error) {
 	return ss, nil
 }
 
-func (s *service) Records() ([]entity.Record, error) {
-	ss, err := s.repo.Records()
+func (s *service) Records(ctx context.Context) ([]entity.Record, error) {
+	ss, err := s.repo.Records(ctx)
 	if err != nil {
 		return ss, err
 	}

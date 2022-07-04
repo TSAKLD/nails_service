@@ -6,15 +6,15 @@ import (
 	"nails/entity"
 )
 
-func (r *Repository) Records() ([]entity.Record, error) {
-	ss, err := r.Get()
+func (r *Repository) Records(ctx context.Context) ([]entity.Record, error) {
+	ss, err := r.Get(ctx)
 	if err == nil {
 		return ss, nil
 	}
 
 	q := "select * from session"
 
-	result, err := r.db.Query(q)
+	result, err := r.db.QueryContext(ctx, q)
 	if err != nil {
 		return []entity.Record{}, err
 	}
@@ -35,7 +35,7 @@ func (r *Repository) Records() ([]entity.Record, error) {
 		log.Println("Unable to close request")
 	}
 
-	err = r.Set(ss)
+	err = r.Set(ctx, ss)
 	if err != nil {
 		log.Println("cache set error")
 	}
@@ -43,19 +43,21 @@ func (r *Repository) Records() ([]entity.Record, error) {
 	return ss, nil
 }
 
-func (r *Repository) Insert(record entity.Record) (entity.Record, error) {
-	q := "INSERT into session(name, date, description)" +
-		" VALUES ($1, $2, $3) RETURNING *"
+func (r *Repository) Insert(ctx context.Context, record entity.Record) (entity.Record, error) {
+	q := "INSERT into session(name, date, created_at, description, status)" +
+		" VALUES ($1, $2, $3, $4, $5) RETURNING *"
 
-	row := r.db.QueryRowContext(context.Background(), q, record.Name,
-		record.Date, record.Description)
+	row := r.db.QueryRowContext(ctx, q, record.Name,
+		record.Date, record.CreatedAt, record.Description, record.Status)
 
-	err := row.Scan(&record.ID, &record.Name, &record.Date, &record.Description)
+	err := row.Scan(&record.ID, &record.Name, &record.Date, &record.Description, &record.CreatedAt, &record.Status)
 	if err != nil {
 		return record, err
 	}
 
-	r.c.Del(context.Background(), "asd321")
-
+	err = r.c.Del(ctx, "asd321").Err()
+	if err != nil {
+		log.Println("cache clear error")
+	}
 	return record, nil
 }
